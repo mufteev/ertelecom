@@ -13,3 +13,9 @@ html, body {
   height: 1.5rem;
   margin-bottom: .25rem;
 }
+
+.error-info {
+  color: #fff;
+  background-color: #dc3545;
+  text-align: center;
+}

@@ -20,15 +20,18 @@ import {
   changeValArchiveDepth,
   changeValTypeProvision,
   clearStoreFields,
-} from '../store/calc';
-import InputValidate from './InputValidate';
-import { digitValidate, tinValidate, isNullOrWhiteSpace } from '../util/validation';
-import { formatCurrency, declensionOfNumbers } from '../util/format';
-import { getJSON, postJSON } from '../util/request';
+} from '../../store/calc';
+import InputValidate from '../InputValidate';
+import { digitValidate, tinValidate, isNullOrWhiteSpace } from '../../util/validation';
+import { formatCurrency, declensionOfNumbers } from '../../util/format';
+import { getJSON, postJSON } from '../../util/request';
+
+
 
 function Calc() {
   const dispatch = useDispatch();
   const calc = useSelector(state => state.calc);
+  const [error, setError] = useState(null);
   const [showModalField, setShowModalField] = useState(false);
   const handleShowField = () => setShowModalField(true);
   const handleCloseField = () => setShowModalField(false);
@@ -49,7 +52,10 @@ function Calc() {
           dispatch(loadInfo(response.data));
         }
       } catch (e) {
-        console.log(e);
+        const msg = e instanceof Response && e.status === 504
+          ? 'Сервер не доступен'
+          : `${e.statusText} [${e.url}]`;
+        setError(msg);
       }
     })();
   }, []);
@@ -77,7 +83,10 @@ function Calc() {
           dispatch(loadCostTotal(response.data));
         }
       } catch (e) {
-        console.log(e);
+        const msg = e instanceof Response && e.status === 504
+          ? 'Сервер не доступен'
+          : e.statusText;
+        handleShowInfo('Ошибка получения данных', msg);
       }
     })();
   }, [
@@ -99,7 +108,10 @@ function Calc() {
           dispatch(loadCities(response.data));
         }
       } catch (e) {
-        console.log(e);
+        const msg = e instanceof Response && e.status === 504
+          ? 'Сервер не доступен'
+          : e.statusText;
+        handleShowInfo('Ошибка получения данных', msg);
       }
     })();
   }
@@ -157,19 +169,23 @@ function Calc() {
           handleShowInfo('Ошибка', `Произошла ошибка при сохранении\n${ response.errorMessage }`);
         }
       } catch (e) {
-        console.log(e);
+        const msg = e instanceof Response && e.status === 504
+          ? 'Сервер не доступен'
+          : e.statusText;
+        handleShowInfo('Ошибка получения данных', msg);
       }
     })()
   }
 
   function clearFields() {
     dispatch(clearStoreFields());
-    handleShowInfo('Ok', 'Ok');
+    handleShowInfo('Поля сброшены', 'Ok');
   }
 
   return (
     <Container className="p-2">
       <h3 className="text-center mb-5">Калькулятор по продукту "Офисный контроль"</h3>
+      { error ? <div className="m-3 p-3 error-info">{ error }</div> : null }
       <Row className="justify-content-center">
         <Col sm="12" md="6">
           <Card>
