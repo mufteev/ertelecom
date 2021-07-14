@@ -56,7 +56,7 @@ const calcSlice = createSlice({
     changeValTypeProvision: (state, { payload }) => {
       state.type_provision_value = payload;
     },
-    changeValCity       : (state, { payload }) => {
+    changeValCity         : (state, { payload }) => {
       state.city_value = payload;
     },
     loadCostTotal         : (state, { payload }) => {

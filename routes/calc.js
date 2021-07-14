@@ -2,7 +2,7 @@ const router = require('express').Router();
 const db = require('../db');
 const { response, eMsg, availableParam } = require('../util');
 
-router.get('/get_directory_info', async (req, res) => {
+router.get('/get_directory_inf', async (req, res) => {
   try {
     const [
       type_provision,
