@@ -1,6 +1,5 @@
 const path = require('path');
 const http = require('http');
-const logger = require('morgan');
 const dotenv = require('dotenv');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -35,7 +34,6 @@ const hostname = process.env.HOSTNAME;
 
 const index = require('./routes');
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
