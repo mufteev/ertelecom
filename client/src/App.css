@@ -1,0 +1,15 @@
+html, body {
+  overflow: hidden;
+  height: 100%;
+}
+
+#root {
+  overflow-y: scroll;
+  height: 100%;
+}
+
+.error-msg {
+  color: red;
+  height: 1.5rem;
+  margin-bottom: .25rem;
+}

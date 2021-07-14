@@ -1,0 +1,24 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.6.0",
+    "body-parser": "^1.18.3",
+    "bootstrap": "^5.0.2",
+    "dotenv": "^10.0.0",
+    "express": "~4.16.1",
+    "morgan": "~1.9.1",
+    "pdfmake": "^0.2.0",
+    "pg": "^8.6.0",
+    "react-bootstrap": "^1.6.1",
+    "react-dropdown-select": "^4.7.4",
+    "react-redux": "^7.2.4",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.2.0",
+    "redux": "^4.1.0"
+  }
+}

@@ -1,0 +1,8 @@
+.request-time {
+    font-size: .75rem;
+}
+
+.currency {
+    font-weight: bold;
+    white-space: nowrap;
+}

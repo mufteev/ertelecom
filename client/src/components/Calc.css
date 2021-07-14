@@ -1,0 +1,20 @@
+.total-cost {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total-cost:not(:last-child){
+    margin-bottom: .25rem;
+    padding-bottom: .25rem;
+    border-bottom: 1px solid gray;
+}
+
+.currency {
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+ul {
+    margin: 0;
+}
