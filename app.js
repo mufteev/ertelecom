@@ -2,13 +2,12 @@ const path = require('path');
 const http = require('http');
 const dotenv = require('dotenv');
 const express = require('express');
-const bodyParser = require('body-parser');
 const log4js = require('log4js');
 
 log4js.configure({
   appenders : {
-    error: { type: 'file', filename: 'logs/error.log' },
-    console   : { type: 'console' }
+    error  : { type: 'file', filename: 'logs/error.log' },
+    console: { type: 'console' }
   },
   categories: {
     default: { appenders: ['console', 'error'], level: 'error' }
@@ -30,8 +29,7 @@ const hostname = process.env.HOSTNAME;
 
 const index = require('./routes');
 
-app.use(express.json());
-app.use(bodyParser.json());
+app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
