@@ -81,6 +81,9 @@ module.exports = function templateReport(data) {
     templateStorages.push(templateStorage('SSD', data.period_service, data.users_count, data.archive_depth, data.cost_service_ssd_per_month, data.cost_service_ssd));
   }
   const template = {
+    info: {
+      title: `Предложение для ${data.company_name}`
+    },
     'content': [
       {
         'style': 'tbl',
