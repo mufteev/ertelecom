@@ -29,6 +29,11 @@ router.get('/get_directory_info', async (req, res) => {
 
 router.get('/get_cities_search', async (req, res) => {
   try {
+    if (!availableParam(req.query, 's')
+        || req.query.s.length < 3) {
+      return response.setError(res, eMsg.ERROR_ARGUMENT);
+    }
+
     const escape_wildcards = req.query.s.replace(/([%_])/gm, '\\$1');
     const search_text = `%${ escape_wildcards }%`;
     const cities = (await db.queryAsync(`
