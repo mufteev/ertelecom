@@ -61,25 +61,23 @@ function History() {
 
   function searchHistory(s) {
     setSearch(s);
-    if (s.length >= 3) {
-      (async () => {
-        try {
-          const data = {
-            query: s
-          };
-          const response = await postJSON('/api/history/search', data);
+    (async () => {
+      try {
+        const data = {
+          query: s
+        };
+        const response = await postJSON('/api/history/search', data);
 
-          if (response.errorCode === 0) {
-            dispatch(loadRequests(response.data));
-          }
-        } catch (e) {
-          const msg = e instanceof Response && e.status === 504
-            ? 'Сервер не доступен'
-            : e.statusText;
-          setError(msg);
+        if (response.errorCode === 0) {
+          dispatch(loadRequests(response.data));
         }
-      })();
-    }
+      } catch (e) {
+        const msg = e instanceof Response && e.status === 504
+          ? 'Сервер не доступен'
+          : e.statusText;
+        setError(msg);
+      }
+    })();
   }
 
   return (
