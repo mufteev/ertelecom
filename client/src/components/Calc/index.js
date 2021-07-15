@@ -98,7 +98,7 @@ function Calc() {
 
   function searchCities(search) {
     (async () => {
-      if (typeof search !== 'string' || search.length === 0) {
+      if (typeof search !== 'string' || search.length < 3) {
         return;
       }
 

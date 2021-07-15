@@ -93,8 +93,15 @@ router.post('/save', async (req, res) => {
   }
 });
 
-router.get('/get_all', async (req, res) => {
+router.post('/search', async (req, res) => {
   try {
+    let search_text = null;
+    if (availableParam(req.body, 'query')
+        && !isNullOrWhiteSpace(req.body.query)
+        && req.body.query.length >= 3) {
+      const escape_wildcards = req.body.query.replace(/([%_])/gm, '\\$1');
+      search_text = `%${ escape_wildcards }%`;
+    }
 
     const requests = (await db.queryAsync(`
       SELECT id,
@@ -112,8 +119,11 @@ router.get('/get_all', async (req, res) => {
              cost_service_hdd_per_month,
              cost_service_ssd_per_month
       FROM history.view_history
+      WHERE coalesce(company_name ILIKE $1, TRUE)
       ORDER BY create_at DESC
-    `)).rows;
+    `, [
+      search_text
+    ])).rows;
 
     return response.setResult(res, requests);
   } catch (err) {
