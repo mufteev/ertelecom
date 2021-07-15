@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const db = require('../db');
-const { response, eMsg, availableParam } = require('../util');
+const { availableParam } = require('../util/valid');
+const response = require('../util/response');
+const eMsg = require('../util/errorMessage');
 
 router.get('/get_directory_info', async (req, res) => {
   try {

@@ -1,7 +1,3 @@
-const response = require('./response');
-const eMsg = require('./errorMessage');
-const pdfReportTemplate = require('./pdfReportRequest');
-
 function availableParam(obj, ...params) {
   return obj && params && params.length !== 0 && params.every((p) => p in obj);
 }
@@ -46,9 +42,6 @@ function validTin(tin) {
 
 module.exports = {
   availableParam,
-  validTin,
   isNullOrWhiteSpace,
-  response,
-  eMsg,
-  pdfReportTemplate
+  validTin
 }

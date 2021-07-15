@@ -1,10 +1,13 @@
 const router = require('express').Router();
 const db = require('../db');
-const { response, eMsg, availableParam, validTin, isNullOrWhiteSpace, pdfReportTemplate } = require('../util');
 const pdfMaker = require('pdfmake');
 const pdfFonts = require('../fontsPDF/Roboto');
-const { formatDate, formatNumberAsCurrency } = require('../util/format');
+const pdfReportTemplate = require('../util/pdfReportRequest');
 const { addDays } = require('../util/date');
+const response = require('../util/response');
+const eMsg = require('../util/errorMessage');
+const { formatDate, formatNumberAsCurrency } = require('../util/format');
+const { availableParam,validTin, isNullOrWhiteSpace } =require('../util/valid');
 
 function isErrorSaveInfo(data) {
   if (/^\s*$/.test(data.company_name)) {
