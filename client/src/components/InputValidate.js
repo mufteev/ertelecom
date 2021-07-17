@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import React from 'react';
 
 function InputValidate({ id, label, value, validate, onChange, type = 'text', min, max }) {
   const [error, setError] = useState(undefined);
@@ -40,4 +41,4 @@ function InputValidate({ id, label, value, validate, onChange, type = 'text', mi
   )
 }
 
-export default InputValidate;
+export default React.memo(InputValidate);
