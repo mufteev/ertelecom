@@ -4,7 +4,8 @@ import {
   Card, Modal, Button
 } from 'react-bootstrap';
 import Select from 'react-select';
-import { useEffect, useState } from 'react';
+import React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   loadInfo,
@@ -26,11 +27,9 @@ import { digitValidate, tinValidate, isNullOrWhiteSpace } from '../../util/valid
 import { formatCurrency, declensionOfNumbers } from '../../util/format';
 import { getJSON, postJSON } from '../../util/request';
 
-
+const MemoSelect = React.memo(Select);
 
 function Calc() {
-  const dispatch = useDispatch();
-  const calc = useSelector(state => state.calc);
   const [error, setError] = useState(null);
   const [showModalField, setShowModalField] = useState(false);
   const handleShowField = () => setShowModalField(true);
@@ -40,8 +39,38 @@ function Calc() {
     title: '',
     body : ''
   });
-  const handleShowInfo = (title, body) => setModalInfo({ show: true, title: title, body: body });
   const handleCloseInfo = () => setModalInfo({ show: false });
+  const handleShowInfo = (title, body) => setModalInfo({ show: true, title: title, body: body });
+
+  const calc = useSelector(state => state.calc);
+  const dispatch = useDispatch();
+
+  const getSelectOptionId = useCallback(({ id }) => id, []);
+  const getSelectOptionName = useCallback(({ name }) => name, []);
+  const getSelectOptionDepth = useCallback(({ depth }) => depth, []);
+  const changeCity = useCallback(val => dispatch(changeValCity(val)), [dispatch]);
+  const onChangeStorage = useCallback((storage) => dispatch(changeValTypeStorage(storage)), [dispatch]);
+  const onChangeProvision = useCallback((provision) => dispatch(changeValTypeProvision(provision)), [dispatch]);
+  const onChangeArchiveDepth = useCallback((archiveDepth) => dispatch(changeValArchiveDepth(archiveDepth)), [dispatch]);
+  const searchCities = useCallback((search) => {
+    (async () => {
+      if (typeof search !== 'string' || search.length < 3) {
+        return;
+      }
+
+      try {
+        const response = await getJSON(`/api/calc/get_cities_search?s=${ search }`);
+        if (response.errorCode === 0) {
+          dispatch(loadCities(response.data));
+        }
+      } catch (e) {
+        const msg = e instanceof Response && e.status === 504
+          ? 'Сервер не доступен'
+          : e.statusText;
+        handleShowInfo('Ошибка получения данных', msg);
+      }
+    })();
+  }, [dispatch]);
 
   useEffect(() => {
     (async () => {
@@ -50,15 +79,18 @@ function Calc() {
 
         if (response.errorCode === 0) {
           dispatch(loadInfo(response.data));
+          setError(null);
         }
       } catch (e) {
-        const msg = e instanceof Response && e.status === 504
-          ? 'Сервер не доступен'
-          : `${e.statusText} [${e.url}]`;
+        const msg = e instanceof Response
+          ? e.statusText
+          : e instanceof TypeError
+            ? e.message
+            : 'Ошибка загрузки справочников';
         setError(msg);
       }
     })();
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     (async () => {
@@ -70,8 +102,8 @@ function Calc() {
         const data = {
           users_count     : calc.users_count,
           period_service  : calc.period_service,
-          type_storage_id : calc.type_storage_value && calc.type_storage_value.id,
-          archive_depth_id: calc.archive_depth_value && calc.archive_depth_value.id
+          type_storage_id : calc.type_storage && calc.type_storage.id,
+          archive_depth_id: calc.archive_depth && calc.archive_depth.id
         };
         if (!(data.type_storage_id && data.archive_depth_id)) {
           return;
@@ -90,31 +122,12 @@ function Calc() {
       }
     })();
   }, [
+    dispatch,
     calc.users_count,
     calc.period_service,
-    calc.type_storage_value,
-    calc.archive_depth_value
+    calc.type_storage,
+    calc.archive_depth
   ]);
-
-  function searchCities(search) {
-    (async () => {
-      if (typeof search !== 'string' || search.length < 3) {
-        return;
-      }
-
-      try {
-        const response = await getJSON(`/api/calc/get_cities_search?s=${ search }`);
-        if (response.errorCode === 0) {
-          dispatch(loadCities(response.data));
-        }
-      } catch (e) {
-        const msg = e instanceof Response && e.status === 504
-          ? 'Сервер не доступен'
-          : e.statusText;
-        handleShowInfo('Ошибка получения данных', msg);
-      }
-    })();
-  }
 
   function getTotal(type_storage, currency) {
     return currency
@@ -135,11 +148,11 @@ function Calc() {
     const missedFields = [
       isNullOrWhiteSpace(calc.company_name) ? 'Название компании' : '',
       !tinValidate(calc.company_tin) ? 'ИНН' : '',
-      calc.city_value === null ? 'Город клиента' : '',
-      calc.type_provision_value === null ? 'Какая услуга интересна' : '',
+      calc.city === null ? 'Город клиента' : '',
+      calc.type_provision === null ? 'Какая услуга интересна' : '',
       digitValidate(calc.users_count, 1, 250) ? 'Количество пользователей' : '',
-      calc.archive_depth_value === null ? 'Количество месяцев хранения данных' : '',
-      calc.type_storage_value === null ? 'Тип жёсткого диска' : '',
+      calc.archive_depth === null ? 'Количество месяцев хранения данных' : '',
+      calc.type_storage === null ? 'Тип жёсткого диска' : '',
       digitValidate(calc.period_service, 1) ? 'Период пользования услугой' : ''
     ].filter(x => x.length > 0);
     if (missedFields.length > 0) {
@@ -155,10 +168,10 @@ function Calc() {
           company_tin      : calc.company_tin,
           company_name     : calc.company_name,
           period_service   : calc.period_service,
-          city_id          : calc.city_value.id,
-          type_storage_id  : calc.type_storage_value.id,
-          archive_depth_id : calc.archive_depth_value.id,
-          type_provision_id: calc.type_provision_value.id,
+          city_id          : calc.city.id,
+          type_storage_id  : calc.type_storage.id,
+          archive_depth_id : calc.archive_depth.id,
+          type_provision_id: calc.type_provision.id,
         }
 
         const response = await postJSON('/api/history/save', data);
@@ -206,27 +219,27 @@ function Calc() {
               />
 
               <label htmlFor="city_select">Город клиента:</label>
-              <Select options={ calc.cities }
-                      value={ calc.city_value }
-                      onChange={ val => dispatch(changeValCity(val)) }
-                      placeholder="Поиск от 3 символов"
-                      isClearable={ true }
-                      isSearchable={ true }
-                      getOptionValue={ ({ id }) => id }
-                      getOptionLabel={ ({ name }) => name }
-                      onInputChange={ (s) => searchCities(s) }
+              <MemoSelect placeholder="Поиск от 3 символов"
+                          value={ calc.city }
+                          onChange={ changeCity }
+                          options={ calc.cities }
+                          onInputChange={ searchCities }
+                          getOptionValue={ getSelectOptionId }
+                          getOptionLabel={ getSelectOptionName }
+                          isClearable={ true }
+                          isSearchable={ true }
               />
 
               <br/>
 
               <label htmlFor="type_provision">Какая услуга интересна:</label>
-              <Select options={ calc.type_provision }
-                      value={ calc.type_provision_value }
-                      onChange={ val => dispatch(changeValTypeProvision(val)) }
-                      placeholder="Выберите тип услуги"
-                      isSearchable={ false }
-                      getOptionValue={ ({ id }) => id }
-                      getOptionLabel={ ({ name }) => name }
+              <MemoSelect placeholder="Выберите тип услуги"
+                          value={ calc.type_provision }
+                          onChange={ onChangeProvision }
+                          options={ calc.type_provisions }
+                          getOptionValue={ getSelectOptionId }
+                          getOptionLabel={ getSelectOptionName }
+                          isSearchable={ false }
               />
 
               <br/>
@@ -248,25 +261,25 @@ function Calc() {
             <Card.Header>Основные требования к оформлению облачного решения</Card.Header>
             <Card.Body>
               <label htmlFor="city_select">Количество месяцев хранения данных (глубина архива):</label>
-              <Select options={ calc.archive_depth }
-                      value={ calc.archive_depth_value }
-                      onChange={ val => dispatch(changeValArchiveDepth(val)) }
-                      placeholder="Выберите глубину"
-                      isSearchable={ false }
-                      getOptionValue={ ({ id }) => id }
-                      getOptionLabel={ ({ depth }) => depth }
+              <MemoSelect placeholder="Выберите глубину"
+                          value={ calc.archive_depth }
+                          options={ calc.archive_depths }
+                          onChange={ onChangeArchiveDepth }
+                          getOptionValue={ getSelectOptionId }
+                          getOptionLabel={ getSelectOptionDepth }
+                          isSearchable={ false }
               />
 
               <br/>
 
               <label htmlFor="city_select">Тип жёсткого диска:</label>
-              <Select options={ calc.type_storage }
-                      value={ calc.type_storage_value }
-                      onChange={ val => dispatch(changeValTypeStorage(val)) }
-                      placeholder="Выберите тип диска"
-                      isSearchable={ false }
-                      getOptionValue={ ({ id }) => id }
-                      getOptionLabel={ ({ name }) => name }
+              <MemoSelect placeholder="Выберите тип диска"
+                          value={ calc.type_storage }
+                          options={ calc.type_storages }
+                          onChange={ onChangeStorage }
+                          getOptionValue={ getSelectOptionId }
+                          getOptionLabel={ getSelectOptionName }
+                          isSearchable={ false }
               />
               <br/>
 
