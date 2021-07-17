@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import React from 'react';
 
 function InputValidate({ id, label, value, validate, onChange, type = 'text', min, max }) {
@@ -15,14 +15,14 @@ function InputValidate({ id, label, value, validate, onChange, type = 'text', mi
     memberMax = max;
   }
 
-  function handleValidate(e) {
+  const onHandleValidate = useCallback(e => {
     if (typeof onChange === 'function') {
       onChange(e.target.value);
     }
     if (typeof validate === 'function') {
       setError(validate(e.target.value));
     }
-  }
+  }, [onChange, validate]);
 
   return (
     <>
@@ -33,8 +33,8 @@ function InputValidate({ id, label, value, validate, onChange, type = 'text', mi
              min={ memberMin }
              max={ memberMax }
              className={ classInput }
-             onBlur={ (e) => handleValidate(e) }
-             onChange={ (e) => handleValidate(e) }
+             onBlur={ onHandleValidate }
+             onChange={ onHandleValidate }
       />
       <div className="error-msg">{ error }</div>
     </>
