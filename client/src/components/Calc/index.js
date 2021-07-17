@@ -23,9 +23,10 @@ import {
   clearStoreFields,
 } from '../../store/calc';
 import InputValidate from '../InputValidate';
-import { digitValidate, tinValidate, isNullOrWhiteSpace } from '../../util/validation';
 import { formatCurrency, declensionOfNumbers } from '../../util/format';
 import Network from './Network';
+import { Valid } from './Valid';
+import { nanoid } from '@reduxjs/toolkit';
 
 const MemoSelect = React.memo(Select);
 
@@ -62,6 +63,15 @@ function Calc() {
       .then(() => setError(null))
       .catch(err => setError(err))
   }, [dispatch]);
+  const onValidCompanyTin = useCallback(s => Valid.validCompanyTin(s), []);
+  const onValidUsersCount = useCallback(s => Valid.validUsersCount(s), []);
+  const onValidCompanyName = useCallback(s => Valid.validCompanyName(s), []);
+  const onValidPeriodService = useCallback(s => Valid.validPeriodService(s), []);
+
+  const onChangeUserCount = useCallback(s => dispatch(setUserCount(s)), [dispatch]);
+  const onChangeCompanyTin = useCallback(s => dispatch(setCompanyTin(s)), [dispatch]);
+  const onChangeCompanyName = useCallback(s => dispatch(setCompanyName(s)), [dispatch]);
+  const onChangePeriodService = useCallback(s => dispatch(setPeriodService(s)), [dispatch]);
 
   useEffect(() => {
     Network
@@ -77,7 +87,9 @@ function Calc() {
       cost_ssd_service: 0
     }));
 
-    if (!(calc.type_storage && calc.type_storage.id)
+    if (Valid.validUsersCount(calc.users_count)
+      || Valid.validPeriodService(calc.period_service)
+      || !(calc.type_storage && calc.type_storage.id)
       || !(calc.archive_depth && calc.archive_depth.id)) {
       return;
     }
@@ -118,22 +130,6 @@ function Calc() {
   }
 
   function saveInfo() {
-    const missedFields = [
-      isNullOrWhiteSpace(calc.company_name) ? 'Название компании' : '',
-      !tinValidate(calc.company_tin) ? 'ИНН' : '',
-      calc.city === null ? 'Город клиента' : '',
-      calc.type_provision === null ? 'Какая услуга интересна' : '',
-      digitValidate(calc.users_count, 1, 250) ? 'Количество пользователей' : '',
-      calc.archive_depth === null ? 'Количество месяцев хранения данных' : '',
-      calc.type_storage === null ? 'Тип жёсткого диска' : '',
-      digitValidate(calc.period_service, 1) ? 'Период пользования услугой' : ''
-    ].filter(x => x.length > 0);
-    if (missedFields.length > 0) {
-      dispatch(setMissedFields(missedFields));
-      handleShowField();
-      return;
-    }
-
     const data = {
       users_count      : calc.users_count,
       company_tin      : calc.company_tin,
@@ -143,6 +139,12 @@ function Calc() {
       type_storage_id  : calc.type_storage.id,
       archive_depth_id : calc.archive_depth.id,
       type_provision_id: calc.type_provision.id,
+    }
+    const missedFields = Valid.getMissedFields(data);
+    if (missedFields.length > 0) {
+      dispatch(setMissedFields(missedFields));
+      handleShowField();
+      return;
     }
 
     Network
@@ -168,15 +170,15 @@ function Calc() {
               <InputValidate id="company_name"
                              label="Название компании:"
                              value={ calc.company_name }
-                             validate={ s => isNullOrWhiteSpace(s) ? 'Введите название компании' : null }
-                             onChange={ s => dispatch(setCompanyName(s)) }
+                             validate={ onValidCompanyName }
+                             onChange={ onChangeCompanyName }
               />
 
               <InputValidate id="company_tin"
                              label="ИНН:"
                              value={ calc.company_tin }
-                             validate={ s => !tinValidate(s) ? 'ИНН не верное' : null }
-                             onChange={ s => dispatch(setCompanyTin(s)) }
+                             validate={ onValidCompanyTin }
+                             onChange={ onChangeCompanyTin }
               />
 
               <label htmlFor="city_select">Город клиента:</label>
@@ -210,8 +212,8 @@ function Calc() {
                              value={ calc.users_count }
                              type="number"
                              min="1" max="250"
-                             validate={ s => digitValidate(s, 1, 250) }
-                             onChange={ s => dispatch(setUserCount(s)) }
+                             validate={ onValidUsersCount }
+                             onChange={ onChangeUserCount }
               />
             </Card.Body>
           </Card>
@@ -249,8 +251,8 @@ function Calc() {
                              value={ calc.period_service }
                              type="number"
                              min="1"
-                             validate={ s => digitValidate(s, 1) }
-                             onChange={ s => dispatch(setPeriodService(s)) }
+                             validate={ onValidPeriodService }
+                             onChange={ onChangePeriodService }
               />
 
             </Card.Body>
@@ -268,7 +270,8 @@ function Calc() {
                     { getTotal('HDD', calc.cost_hdd_service) }
                     { getTotal('SSD', calc.cost_ssd_service) }
                   </div>
-                  : <div>Подсчёт...</div>
+                  :
+                  <div>Подсчёт...</div>
               }
             </Card.Body>
           </Card>
@@ -299,7 +302,7 @@ function Calc() {
         </Modal.Header>
         <Modal.Body>
           <ul>
-            { calc.missed_field.map(x => <li key={ x }>{ x }</li>) }
+            { calc.missed_field.map(x => <li key={ nanoid() }>{ x }</li>) }
           </ul>
         </Modal.Body>
         <Modal.Footer>
