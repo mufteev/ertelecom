@@ -40,7 +40,7 @@ function Calc() {
     title: '',
     body : ''
   });
-  const handleCloseInfo = () => setModalInfo({ show: false });
+  const handleCloseInfo = () => setModalInfo({ show: false, title: '', body: '' });
   const handleShowInfo = (title, body) => setModalInfo({ show: true, title: title, body: body });
 
   const calc = useSelector(state => state.calc);
