@@ -31,7 +31,7 @@ const index = require('./routes');
 
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'build')));
 
 app.use('/api', index);
 
