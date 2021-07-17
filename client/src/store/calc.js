@@ -3,31 +3,31 @@ import { createSlice } from '@reduxjs/toolkit';
 const calcSlice = createSlice({
   name        : 'calc',
   initialState: {
-    company_name        : '',
-    company_tin         : '',
-    users_count         : '1',
-    period_service      : '1',
-    archive_depth       : [],
-    type_storage        : [],
-    type_provision      : [],
-    cities              : [],
-    archive_depth_value : null,
-    type_storage_value  : null,
-    type_provision_value: null,
-    city_value          : null,
-    cost_hdd_service    : null,
-    cost_ssd_service    : null,
-    missed_field        : [],
-    enable_save         : false,
+    company_name    : '',
+    company_tin     : '',
+    users_count     : '1',
+    period_service  : '1',
+    archive_depths  : [],
+    type_storages   : [],
+    type_provisions : [],
+    cities          : [],
+    archive_depth   : null,
+    type_storage    : null,
+    type_provision  : null,
+    city            : null,
+    cost_hdd_service: null,
+    cost_ssd_service: null,
+    missed_field    : [],
+    enable_save     : false,
   },
   reducers    : {
     loadInfo              : (state, { payload }) => {
-      state.archive_depth = payload.archive_depth;
-      state.type_storage = payload.type_storage;
-      state.type_provision = payload.type_provision;
-      state.archive_depth_value = payload.archive_depth[0];
-      state.type_storage_value = payload.type_storage[0];
-      state.type_provision_value = payload.type_provision[0];
+      state.archive_depths = payload.archive_depth;
+      state.type_storages = payload.type_storage;
+      state.type_provisions = payload.type_provision;
+      state.archive_depth = payload.archive_depth[0];
+      state.type_storage = payload.type_storage[0];
+      state.type_provision = payload.type_provision[0];
     },
     loadCities            : (state, { payload }) => {
       state.cities = payload;
@@ -48,16 +48,16 @@ const calcSlice = createSlice({
       state.missed_field = payload;
     },
     changeValArchiveDepth : (state, { payload }) => {
-      state.archive_depth_value = payload;
+      state.archive_depth = payload;
     },
     changeValTypeStorage  : (state, { payload }) => {
-      state.type_storage_value = payload;
+      state.type_storage = payload;
     },
     changeValTypeProvision: (state, { payload }) => {
-      state.type_provision_value = payload;
+      state.type_provision = payload;
     },
     changeValCity         : (state, { payload }) => {
-      state.city_value = payload;
+      state.city = payload;
     },
     loadCostTotal         : (state, { payload }) => {
       state.cost_hdd_service = payload.cost_hdd_service;
@@ -68,10 +68,10 @@ const calcSlice = createSlice({
       state.company_tin = '';
       state.users_count = '1';
       state.period_service = '1';
-      state.archive_depth_value = null;
+      state.archive_depth = null;
       state.type_storage_value = null;
-      state.type_provision_value = null;
-      state.city_value = null;
+      state.type_provision = null;
+      state.city = null;
     }
   }
 });
