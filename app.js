@@ -31,9 +31,14 @@ const index = require('./routes');
 
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'build')));
 
 app.use('/api', index);
+
+app.use(express.static(path.join(__dirname, 'build')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build/index.html'));
+});
+
 
 app.use((req, res) => {
   res.status(404).send('Ресурс не найден [File not found]');
