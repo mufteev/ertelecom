@@ -25,7 +25,7 @@ import {
 import InputValidate from '../InputValidate';
 import { digitValidate, tinValidate, isNullOrWhiteSpace } from '../../util/validation';
 import { formatCurrency, declensionOfNumbers } from '../../util/format';
-import { getJSON, postJSON } from '../../util/request';
+import Network from './Network';
 
 const MemoSelect = React.memo(Select);
 
@@ -53,74 +53,47 @@ function Calc() {
   const onChangeProvision = useCallback((provision) => dispatch(changeValTypeProvision(provision)), [dispatch]);
   const onChangeArchiveDepth = useCallback((archiveDepth) => dispatch(changeValArchiveDepth(archiveDepth)), [dispatch]);
   const searchCities = useCallback((search) => {
-    (async () => {
-      if (typeof search !== 'string' || search.length < 3) {
-        return;
-      }
-
-      try {
-        const response = await getJSON(`/api/calc/get_cities_search?s=${ search }`);
-        if (response.errorCode === 0) {
-          dispatch(loadCities(response.data));
-        }
-      } catch (e) {
-        const msg = e instanceof Response && e.status === 504
-          ? 'Сервер не доступен'
-          : e.statusText;
-        handleShowInfo('Ошибка получения данных', msg);
-      }
-    })();
+    if (typeof search !== 'string' || search.length < 3) {
+      return;
+    }
+    Network
+      .searchCitiesAsync(search)
+      .then(data => dispatch(loadCities(data)))
+      .then(() => setError(null))
+      .catch(err => setError(err))
   }, [dispatch]);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const response = await getJSON('/api/calc/get_directory_info');
-
-        if (response.errorCode === 0) {
-          dispatch(loadInfo(response.data));
-          setError(null);
-        }
-      } catch (e) {
-        const msg = e instanceof Response
-          ? e.statusText
-          : e instanceof TypeError
-            ? e.message
-            : 'Ошибка загрузки справочников';
-        setError(msg);
-      }
-    })();
+    Network
+      .loadDirectoriesAsync()
+      .then(data => dispatch(loadInfo(data)))
+      .then(() => setError(null))
+      .catch(err => setError(err));
   }, [dispatch]);
 
   useEffect(() => {
-    (async () => {
-      try {
-        dispatch(loadCostTotal({
-          cost_hdd_service: 0,
-          cost_ssd_service: 0
-        }));
-        const data = {
-          users_count     : calc.users_count,
-          period_service  : calc.period_service,
-          type_storage_id : calc.type_storage && calc.type_storage.id,
-          archive_depth_id: calc.archive_depth && calc.archive_depth.id
-        };
-        if (!(data.type_storage_id && data.archive_depth_id)) {
-          return;
-        }
+    dispatch(loadCostTotal({
+      cost_hdd_service: 0,
+      cost_ssd_service: 0
+    }));
 
-        const response = await postJSON('/api/calc/calculating', data);
+    if (!(calc.type_storage && calc.type_storage.id)
+      || !(calc.archive_depth && calc.archive_depth.id)) {
+      return;
+    }
 
-        if (response.errorCode === 0) {
-          dispatch(loadCostTotal(response.data));
-        }
-      } catch (e) {
-        const msg = e instanceof Response && e.status === 504
-          ? 'Сервер не доступен'
-          : e.statusText;
-        handleShowInfo('Ошибка получения данных', msg);
-      }
-    })();
+    const data = {
+      users_count     : calc.users_count,
+      period_service  : calc.period_service,
+      type_storage_id : calc.type_storage && calc.type_storage.id,
+      archive_depth_id: calc.archive_depth && calc.archive_depth.id
+    };
+
+    Network
+      .sendCalculationAsync(data)
+      .then(data => dispatch(loadCostTotal(data)))
+      .then(() => setError(null))
+      .catch(err => setError(err));
   }, [
     dispatch,
     calc.users_count,
@@ -161,33 +134,21 @@ function Calc() {
       return;
     }
 
-    (async () => {
-      try {
-        const data = {
-          users_count      : calc.users_count,
-          company_tin      : calc.company_tin,
-          company_name     : calc.company_name,
-          period_service   : calc.period_service,
-          city_id          : calc.city.id,
-          type_storage_id  : calc.type_storage.id,
-          archive_depth_id : calc.archive_depth.id,
-          type_provision_id: calc.type_provision.id,
-        }
+    const data = {
+      users_count      : calc.users_count,
+      company_tin      : calc.company_tin,
+      company_name     : calc.company_name,
+      period_service   : calc.period_service,
+      city_id          : calc.city.id,
+      type_storage_id  : calc.type_storage.id,
+      archive_depth_id : calc.archive_depth.id,
+      type_provision_id: calc.type_provision.id,
+    }
 
-        const response = await postJSON('/api/history/save', data);
-
-        if (response.errorCode === 0) {
-          handleShowInfo('Сохранено', 'Информация о клиенте сохранена!');
-        } else {
-          handleShowInfo('Ошибка', `Произошла ошибка при сохранении\n${ response.errorMessage }`);
-        }
-      } catch (e) {
-        const msg = e instanceof Response && e.status === 504
-          ? 'Сервер не доступен'
-          : e.statusText;
-        handleShowInfo('Ошибка получения данных', msg);
-      }
-    })()
+    Network
+      .saveHistoryAsync(data)
+      .then(() => handleShowInfo('Сохранено', 'Информация о клиенте сохранена!'))
+      .catch((err) => handleShowInfo('Ошибка', `Произошла ошибка при сохранении\n${ err }`));
   }
 
   function clearFields() {

@@ -1,11 +1,11 @@
 import './History.css';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { postJSON } from '../../util/request';
 import { loadRequests } from '../../store/history';
 import { Col, Container, Row, InputGroup, FormControl, Button } from 'react-bootstrap';
 import { formatCurrency, formatDateTime } from '../../util/format';
 import { isNullOrWhiteSpace } from '../../util/validation';
+import Network from './Network';
 
 function History() {
   const dispatch = useDispatch();
@@ -14,21 +14,29 @@ function History() {
   const history = useSelector(state => state.history);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const response = await postJSON('/api/history/search');
+    Network
+      .searchAsync()
+      .then(data => dispatch(loadRequests(data)))
+      .then(() => setError(null))
+      .catch(err => setError(err));
+  }, [dispatch]);
 
-        if (response.errorCode === 0) {
-          dispatch(loadRequests(response.data));
-        }
-      } catch (e) {
-        const msg = e instanceof Response && e.status === 504
-          ? 'Сервер не доступен'
-          : e.statusText;
-        setError(msg);
-      }
-    })()
-  }, []);
+  const onSearchHistory = useCallback(e => {
+    const value = e?.target?.value || '';
+    setSearch(value);
+
+    const data = {
+      query: value
+    };
+    Network
+      .searchAsync(data)
+      .then(data => dispatch(loadRequests(data)))
+      .then(() => setError(null))
+      .catch(err => setError(err));
+  }, [dispatch]);
+
+  const onClearSearch = useCallback(() => onSearchHistory(null), [onSearchHistory]);
+
 
   function getTotal(type_storage, currency) {
     return currency
@@ -59,27 +67,6 @@ function History() {
     );
   }
 
-  function searchHistory(s) {
-    setSearch(s);
-    (async () => {
-      try {
-        const data = {
-          query: s
-        };
-        const response = await postJSON('/api/history/search', data);
-
-        if (response.errorCode === 0) {
-          dispatch(loadRequests(response.data));
-        }
-      } catch (e) {
-        const msg = e instanceof Response && e.status === 504
-          ? 'Сервер не доступен'
-          : e.statusText;
-        setError(msg);
-      }
-    })();
-  }
-
   return (
     <Container className="p-2">
       <h3 className="text-center mb-5">Ранее произведённые расчёты</h3>
@@ -89,13 +76,13 @@ function History() {
           <InputGroup>
             <FormControl value={ search }
                          placeholder="Поиск от трёх символов"
-                         onChange={ e => searchHistory(e.target.value) }
+                         onChange={ onSearchHistory }
             />
             {
               !isNullOrWhiteSpace(search)
                 ?
                 (
-                  <Button variant="outline-danger" onClick={() => searchHistory('') }>
+                  <Button variant="outline-danger" onClick={ onClearSearch }>
                     Очистить
                   </Button>
                 )
