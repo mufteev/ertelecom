@@ -1,11 +1,11 @@
 import './History.css';
-import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { loadRequests } from '../../store/history';
-import { Col, Container, Row, InputGroup, FormControl, Button } from 'react-bootstrap';
-import { formatCurrency, formatDateTime } from '../../util/format';
-import { isNullOrWhiteSpace } from '../../util/validation';
 import Network from './Network';
+import { loadRequests } from '../../store/history';
+import { useDispatch, useSelector } from 'react-redux';
+import { useCallback, useEffect, useState } from 'react';
+import { isNullOrWhiteSpace } from '../../util/validation';
+import { formatCurrency, formatDateTime } from '../../util/format';
+import { Col, Container, Row, InputGroup, FormControl, Button } from 'react-bootstrap';
 
 function History() {
   const dispatch = useDispatch();

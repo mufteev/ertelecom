@@ -1,45 +1,55 @@
 import './Calc.css';
+import React from 'react';
+import Select from 'react-select';
+import Network from './Network';
+import InputValidate from '../InputValidate';
+import { Valid } from './Valid';
+import { nanoid } from '@reduxjs/toolkit';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import {
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
+import {
+  formatCurrency,
+  declensionOfNumbers,
+} from '../../util/format';
+import {
+  loadInfo,
+  loadCities,
+  setUserCount,
+  loadCostTotal,
+  changeValCity,
+  setCompanyTin,
+  setCompanyName,
+  setMissedFields,
+  clearStoreFields,
+  setPeriodService,
+  changeValTypeStorage,
+  changeValArchiveDepth,
+  changeValTypeProvision,
+} from '../../store/calc';
 import {
   Container, Row, Col,
   Card, Modal, Button
 } from 'react-bootstrap';
-import Select from 'react-select';
-import React from 'react';
-import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  loadInfo,
-  loadCities,
-  loadCostTotal,
-  setUserCount,
-  setCompanyTin,
-  setCompanyName,
-  setPeriodService,
-  setMissedFields,
-  changeValCity,
-  changeValTypeStorage,
-  changeValArchiveDepth,
-  changeValTypeProvision,
-  clearStoreFields,
-} from '../../store/calc';
-import InputValidate from '../InputValidate';
-import { formatCurrency, declensionOfNumbers } from '../../util/format';
-import Network from './Network';
-import { Valid } from './Valid';
-import { nanoid } from '@reduxjs/toolkit';
 
 const MemoSelect = React.memo(Select);
 
 function Calc() {
   const [error, setError] = useState(null);
   const [showModalField, setShowModalField] = useState(false);
-  const handleShowField = () => setShowModalField(true);
-  const handleCloseField = () => setShowModalField(false);
   const [modalInfo, setModalInfo] = useState({
     show : false,
     title: '',
     body : ''
   });
+  const handleShowField = () => setShowModalField(true);
+  const handleCloseField = () => setShowModalField(false);
   const handleCloseInfo = () => setModalInfo({ show: false, title: '', body: '' });
   const handleShowInfo = (title, body) => setModalInfo({ show: true, title: title, body: body });
 
@@ -49,7 +59,7 @@ function Calc() {
   const getSelectOptionId = useCallback(({ id }) => id, []);
   const getSelectOptionName = useCallback(({ name }) => name, []);
   const getSelectOptionDepth = useCallback(({ depth }) => depth, []);
-  const changeCity = useCallback(val => dispatch(changeValCity(val)), [dispatch]);
+  const onChangeCity = useCallback(val => dispatch(changeValCity(val)), [dispatch]);
   const onChangeStorage = useCallback((storage) => dispatch(changeValTypeStorage(storage)), [dispatch]);
   const onChangeProvision = useCallback((provision) => dispatch(changeValTypeProvision(provision)), [dispatch]);
   const onChangeArchiveDepth = useCallback((archiveDepth) => dispatch(changeValArchiveDepth(archiveDepth)), [dispatch]);
@@ -184,7 +194,7 @@ function Calc() {
               <label htmlFor="city_select">Город клиента:</label>
               <MemoSelect placeholder="Поиск от 3 символов"
                           value={ calc.city }
-                          onChange={ changeCity }
+                          onChange={ onChangeCity }
                           options={ calc.cities }
                           onInputChange={ searchCities }
                           getOptionValue={ getSelectOptionId }
