@@ -13,7 +13,7 @@ psql -d ertelecom -U postgres -q -f db.sql
 Важно, необходимо привести в соответствие данные о подключении для серверной стороны в файле config.env.
 
 # Production
-### Сборка приложения
+### Сборка и запуск приложения
 ```
 cd ertelecom
 npm i
@@ -21,7 +21,7 @@ cd ./client
 npm i
 npm run build
 cd ..
-
+npm start
 ```
 # Development
 ### Процесс развёртывания приложения
