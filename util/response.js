@@ -3,7 +3,7 @@ function setResult(res, data) {
 }
 
 function setError(res, { msg, code }) {
-  return setResponse(res, msg, code);
+  return setResponse(res, null, msg, code);
 }
 
 function setResponse(res, data, errorMessage, errorCode) {
