@@ -68,9 +68,9 @@ const calcSlice = createSlice({
       state.company_tin = '';
       state.users_count = '1';
       state.period_service = '1';
-      state.archive_depth = null;
-      state.type_storage_value = null;
-      state.type_provision = null;
+      state.archive_depth = state.archive_depths[0];
+      state.type_storage = state.type_storages[0];
+      state.type_provision = state.type_provisions[0];
       state.city = null;
     }
   }
