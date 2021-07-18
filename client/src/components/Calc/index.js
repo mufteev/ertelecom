@@ -99,16 +99,16 @@ function Calc() {
 
     if (Valid.validUsersCount(calc.users_count)
       || Valid.validPeriodService(calc.period_service)
-      || !(calc.type_storage && calc.type_storage.id)
-      || !(calc.archive_depth && calc.archive_depth.id)) {
+      || !(calc.type_storage?.id)
+      || !(calc.archive_depth?.id)) {
       return;
     }
 
     const data = {
       users_count     : calc.users_count,
       period_service  : calc.period_service,
-      type_storage_id : calc.type_storage && calc.type_storage.id,
-      archive_depth_id: calc.archive_depth && calc.archive_depth.id
+      type_storage_id : calc.type_storage.id,
+      archive_depth_id: calc.archive_depth.id
     };
 
     Network
@@ -120,8 +120,8 @@ function Calc() {
     dispatch,
     calc.users_count,
     calc.period_service,
-    calc.type_storage,
-    calc.archive_depth
+    calc.type_storage?.id,
+    calc.archive_depth?.id
   ]);
 
   function getTotal(type_storage, currency) {
