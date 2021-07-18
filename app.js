@@ -1,6 +1,7 @@
 const path = require('path');
 const http = require('http');
 const dotenv = require('dotenv');
+const compression = require('compression');
 const express = require('express');
 const log4js = require('log4js');
 
@@ -19,16 +20,14 @@ console.error = (e) => loggerError.error(e);
 dotenv.config({
   path: './config.env'
 });
-
-const app = express();
-const server = http.createServer(app);
-
-
 const port = process.env.PORT;
 const hostname = process.env.HOSTNAME;
 
+const app = express();
+const server = http.createServer(app);
 const index = require('./routes');
 
+app.use(compression());
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: false }));
 
