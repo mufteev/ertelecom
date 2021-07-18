@@ -11,5 +11,10 @@
     "log4js": "^6.3.0",
     "pdfmake": "^0.2.0",
     "pg": "^8.6.0"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-clean": "^0.4.0",
+    "gulp-replace": "^1.1.3"
   }
 }
