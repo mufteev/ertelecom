@@ -1,19 +1,34 @@
-import { useCallback, useState } from 'react';
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
+const initInputClass = ['form-control'];
 
 function InputValidate({ id, label, value, validate, onChange, type = 'text', min, max }) {
+  const [minVal, setMin] = useState(null);
+  const [maxVal, setMax] = useState(null);
   const [error, setError] = useState(undefined);
+  const [inputClass, setInputClass] = useState(initInputClass);
 
-  let classInput = 'form-control';
-  let memberMin = '';
-  let memberMax = '';
+  const memoMin = useMemo(() => minVal, [minVal]);
+  const memoMax = useMemo(() => maxVal, [maxVal]);
+  const memoError = useMemo(() => error, [error]);
+  const memoClass = useMemo(() => inputClass.join(' '), [inputClass]);
 
-  if (error === null) classInput += ' is-valid';
-  if (!!error) classInput += ' is-invalid';
-  if (type === 'number') {
-    memberMin = min;
-    memberMax = max;
-  }
+
+  useEffect(() => {
+    if (type === 'number') {
+      setMin(min);
+      setMax(max);
+    }
+  }, [type, min, max]);
+
+  useEffect(() => {
+    if (error === null) {
+      setInputClass([...initInputClass, 'is-valid']);
+    }
+    if (!!error) {
+      setInputClass([...initInputClass, 'is-invalid']);
+    }
+  }, [error])
 
   const onHandleValidate = useCallback(e => {
     if (typeof onChange === 'function') {
@@ -30,13 +45,13 @@ function InputValidate({ id, label, value, validate, onChange, type = 'text', mi
       <input id={ id }
              type={ type }
              value={ value }
-             min={ memberMin }
-             max={ memberMax }
-             className={ classInput }
+             min={ memoMin }
+             max={ memoMax }
+             className={ memoClass }
              onBlur={ onHandleValidate }
              onChange={ onHandleValidate }
       />
-      <div className="error-msg">{ error }</div>
+      <div className="error-msg">{ memoError }</div>
     </>
   )
 }
