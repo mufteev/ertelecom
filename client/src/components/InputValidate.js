@@ -1,18 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-
-const initInputClass = ['form-control'];
+import { useCallback, useEffect, useMemo, useState, useRef, memo } from 'react';
 
 function InputValidate({ id, label, value, validate, onChange, type = 'text', min, max }) {
+  const ref = useRef(null);
+
   const [minVal, setMin] = useState(null);
   const [maxVal, setMax] = useState(null);
   const [error, setError] = useState(undefined);
-  const [inputClass, setInputClass] = useState(initInputClass);
 
   const memoMin = useMemo(() => minVal, [minVal]);
   const memoMax = useMemo(() => maxVal, [maxVal]);
   const memoError = useMemo(() => error, [error]);
-  const memoClass = useMemo(() => inputClass.join(' '), [inputClass]);
-
 
   useEffect(() => {
     if (type === 'number') {
@@ -22,13 +19,9 @@ function InputValidate({ id, label, value, validate, onChange, type = 'text', mi
   }, [type, min, max]);
 
   useEffect(() => {
-    if (error === null) {
-      setInputClass([...initInputClass, 'is-valid']);
-    }
-    if (!!error) {
-      setInputClass([...initInputClass, 'is-invalid']);
-    }
-  }, [error])
+    ref.current?.classList.toggle('is-valid', error === null);
+    ref.current?.classList.toggle('is-invalid', !!error);
+  }, [error]);
 
   const onHandleValidate = useCallback(e => {
     if (typeof onChange === 'function') {
@@ -43,11 +36,12 @@ function InputValidate({ id, label, value, validate, onChange, type = 'text', mi
     <>
       <label htmlFor={ id }>{ label }</label>
       <input id={ id }
+             ref={ ref }
              type={ type }
              value={ value }
              min={ memoMin }
              max={ memoMax }
-             className={ memoClass }
+             className="form-control"
              onBlur={ onHandleValidate }
              onChange={ onHandleValidate }
       />
@@ -56,4 +50,4 @@ function InputValidate({ id, label, value, validate, onChange, type = 'text', mi
   )
 }
 
-export default React.memo(InputValidate);
+export default memo(InputValidate);
