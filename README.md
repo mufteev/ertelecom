@@ -21,6 +21,7 @@ cd ./client
 npm i
 npm run build
 cd ..
+gulp cleanMap
 npm start
 ```
 # Development
