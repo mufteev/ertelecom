@@ -5,22 +5,11 @@ export default memo(function ({ id, label, value, validate, onChange, type = 'te
 
   const [minVal, setMin] = useState(null);
   const [maxVal, setMax] = useState(null);
-<<<<<<< HEAD
-  const [serror, setError] = useState(undefined);
-  const [inputClass, setInputClass] = useState(initInputClass);
-
-  const memoMin = useMemo(() => minVal, [minVal]);
-  const memoMax = useMemo(() => maxVal, [maxVal]);
-  const memoError = useMemo(() => serror, [serror]);
-  const memoClass = useMemo(() => inputClass.join(' '), [inputClass]);
-
-=======
   const [error, setError] = useState(undefined);
 
   const memoMin = useMemo(() => minVal, [minVal]);
   const memoMax = useMemo(() => maxVal, [maxVal]);
   const memoError = useMemo(() => error, [error]);
->>>>>>> 6b0d20f14aba3597680eec3e7851a067fc90f399
 
   useEffect(() => {
     if (type === 'number') {
@@ -30,19 +19,9 @@ export default memo(function ({ id, label, value, validate, onChange, type = 'te
   }, [type, min, max]);
 
   useEffect(() => {
-<<<<<<< HEAD
-    if (serror === null) {
-      setInputClass([...initInputClass, 'is-valid']);
-    }
-    if (!!serror) {
-      setInputClass([...initInputClass, 'is-invalid']);
-    }
-  }, [serror])
-=======
     ref.current?.classList.toggle('is-valid', error === null);
     ref.current?.classList.toggle('is-invalid', !!error);
   }, [error]);
->>>>>>> 6b0d20f14aba3597680eec3e7851a067fc90f399
 
   const onHandleValidate = useCallback(e => {
     if (typeof onChange === 'function') {
