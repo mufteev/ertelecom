@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, useRef, memo } from 'react';
 
-function InputValidate({ id, label, value, validate, onChange, type = 'text', min, max }) {
+export default memo(function ({ id, label, value, validate, onChange, type = 'text', min, max }) {
   const ref = useRef(null);
 
   const [minVal, setMin] = useState(null);
@@ -48,6 +48,4 @@ function InputValidate({ id, label, value, validate, onChange, type = 'text', mi
       <div className="error-msg">{ memoError }</div>
     </>
   )
-}
-
-export default memo(InputValidate);
+});
