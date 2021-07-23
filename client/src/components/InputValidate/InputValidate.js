@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState, useRef, memo } from 'react';
 
+<<<<<<< HEAD
 export default memo(function ({ idd, label, value, validate, onChange, type = 'text', min, max }) {
+=======
+export default memo(function ({ ids, label, value, validate, onChange, type = 'text', min, max }) {
+>>>>>>> 0a423032958ac3f715ea14d72c523bbb7520c384
   const ref = useRef(null);
 
   const [minVal, setMin] = useState(null);
@@ -34,8 +38,13 @@ export default memo(function ({ idd, label, value, validate, onChange, type = 't
 
   return (
     <>
+<<<<<<< HEAD
       <label htmlFor={ idd }>{ label }</label>
       <input id={ idd }
+=======
+      <label htmlFor={ ids }>{ label }</label>
+      <input id={ ids }
+>>>>>>> 0a423032958ac3f715ea14d72c523bbb7520c384
              ref={ ref }
              type={ type }
              value={ value }
