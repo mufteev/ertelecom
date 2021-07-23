@@ -10,6 +10,10 @@ export function isNullOrWhiteSpace(str) {
   return str === null || /^\s*$/.test(str);
 }
 
+export function isFunction(call) {
+  return typeof call === 'function';
+}
+
 export function tinValidate(value) {
   if (typeof value !== 'string'
     || (value.length !== 10 && value.length !== 12)

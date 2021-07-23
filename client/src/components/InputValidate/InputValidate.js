@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, useRef, memo } from 'react';
+import { isFunction, isNullOrWhiteSpace } from '../../util/validation';
 
 export default memo(function ({ id, label, value, validate, onChange, type = 'text', min, max }) {
   const ref = useRef(null);
@@ -24,10 +25,10 @@ export default memo(function ({ id, label, value, validate, onChange, type = 'te
   }, [error]);
 
   const onHandleValidate = useCallback(e => {
-    if (typeof onChange === 'function') {
+    if (isFunction(onChange)) {
       onChange(e.target.value);
     }
-    if (typeof validate === 'function') {
+    if (isFunction(validate)) {
       setError(validate(e.target.value));
     }
   }, [onChange, validate]);
