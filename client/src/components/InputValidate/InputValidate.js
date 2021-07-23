@@ -20,8 +20,10 @@ export default memo(function ({ id, label, value, validate, onChange, type = 'te
   }, [type, min, max]);
 
   useEffect(() => {
-    ref.current?.classList.toggle('is-valid', error === null);
-    ref.current?.classList.toggle('is-invalid', !!error);
+    const isValid = isNullOrWhiteSpace(error);
+    const isInvalid = !isNullOrWhiteSpace(error) && error !== undefined;
+    ref.current?.classList.toggle('is-valid', isValid);
+    ref.current?.classList.toggle('is-invalid', isInvalid);
   }, [error]);
 
   const onHandleValidate = useCallback(e => {
