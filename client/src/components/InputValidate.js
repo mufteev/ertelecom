@@ -5,12 +5,12 @@ const initInputClass = ['form-control'];
 function InputValidate({ id, label, value, validate, onChange, type = 'text', min, max }) {
   const [minVal, setMin] = useState(null);
   const [maxVal, setMax] = useState(null);
-  const [error, setError] = useState(undefined);
+  const [serror, setError] = useState(undefined);
   const [inputClass, setInputClass] = useState(initInputClass);
 
   const memoMin = useMemo(() => minVal, [minVal]);
   const memoMax = useMemo(() => maxVal, [maxVal]);
-  const memoError = useMemo(() => error, [error]);
+  const memoError = useMemo(() => serror, [serror]);
   const memoClass = useMemo(() => inputClass.join(' '), [inputClass]);
 
 
@@ -22,13 +22,13 @@ function InputValidate({ id, label, value, validate, onChange, type = 'text', mi
   }, [type, min, max]);
 
   useEffect(() => {
-    if (error === null) {
+    if (serror === null) {
       setInputClass([...initInputClass, 'is-valid']);
     }
-    if (!!error) {
+    if (!!serror) {
       setInputClass([...initInputClass, 'is-invalid']);
     }
-  }, [error])
+  }, [serror])
 
   const onHandleValidate = useCallback(e => {
     if (typeof onChange === 'function') {
