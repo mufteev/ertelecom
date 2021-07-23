@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, useRef, memo } from 'react';
 
-export default memo(function ({ id, label, value, validate, onChange, type = 'text', min, max }) {
+export default memo(function ({ idd, label, value, validate, onChange, type = 'text', min, max }) {
   const ref = useRef(null);
 
   const [minVal, setMin] = useState(null);
@@ -34,8 +34,8 @@ export default memo(function ({ id, label, value, validate, onChange, type = 'te
 
   return (
     <>
-      <label htmlFor={ id }>{ label }</label>
-      <input id={ id }
+      <label htmlFor={ idd }>{ label }</label>
+      <input id={ idd }
              ref={ ref }
              type={ type }
              value={ value }
