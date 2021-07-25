@@ -1,0 +1,1 @@
+export { navPaths } from './navPaths'

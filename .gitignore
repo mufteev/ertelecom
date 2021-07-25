@@ -5,10 +5,5 @@ node_modules
 
 # yarn
 .yarn/*
-!.yarn/cache
-!.yarn/patches
-!.yarn/plugins
 !.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-/yarn.lock
+/client_material/.yarnrc.yml
