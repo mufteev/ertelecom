@@ -1,7 +1,7 @@
 node_modules
 /.idea/
-/yarn.lock
 /client/build/
+/client_material/build/
 
 # yarn
 .yarn/*
@@ -11,3 +11,4 @@ node_modules
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+/yarn.lock
