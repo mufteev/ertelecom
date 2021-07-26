@@ -27,6 +27,8 @@ const app = express();
 const server = http.createServer(app);
 const index = require('./routes');
 
+app.disable('etag');
+
 app.use(compression());
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: false }));
