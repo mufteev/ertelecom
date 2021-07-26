@@ -6,6 +6,7 @@ node_modules
 # yarn
 .yarn/*
 !.yarn/releases
+!.yarn/plugins
 /client_material/.yarn/*
 !/client_material/.yarn/releases
 /client_material/.yarnrc.yml
