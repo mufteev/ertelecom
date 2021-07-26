@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const compression = require('compression');
 const express = require('express');
 const log4js = require('log4js');
+const routes = require('./routes');
 
 log4js.configure({
   appenders : {
@@ -25,13 +26,12 @@ const hostname = process.env.HOSTNAME;
 
 const app = express();
 const server = http.createServer(app);
-const index = require('./routes');
 
 app.use(compression());
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/api', index);
+app.use('/api', routes);
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 app.get('/*', (req, res, next) => {
@@ -39,7 +39,7 @@ app.get('/*', (req, res, next) => {
   next();
 });
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/build/index.html'));
+  res.sendFile(path.join(__dirname, 'client/build/routes.html'));
 });
 
 
