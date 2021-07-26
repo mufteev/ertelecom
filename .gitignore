@@ -6,4 +6,11 @@ node_modules
 # yarn
 .yarn/*
 !.yarn/releases
+/client_material/.yarn/*
+!/client_material/.yarn/releases
 /client_material/.yarnrc.yml
+/client_material/.yarn/build-state.yml
+/client_material/.yarn/install-state.gz
+.yarnrc.yml
+.yarn/build-state.yml
+.yarn/install-state.gz
