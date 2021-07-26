@@ -1,7 +1,8 @@
+import { memo } from 'react';
+import TextField from '@material-ui/core/TextField';
 import { Autocomplete } from '@material-ui/lab';
-import { TextField } from '@material-ui/core';
 
-export function ComboBox({ label, value, options, getOptionLabel, onChange }) {
+export const ComboBox = memo(function ({ label, value, options, getOptionLabel, onChange, onInputChange }) {
   return (
     <Autocomplete options={ options }
                   value={ value }
@@ -9,8 +10,8 @@ export function ComboBox({ label, value, options, getOptionLabel, onChange }) {
                   getOptionLabel={ getOptionLabel }
                   renderInput={ params => <TextField { ...params }
                                                      label={ label }
-                                                     variant="outlined"
-                  /> }
+                                                     onChange={ onInputChange }
+                                                     variant="outlined"/> }
     />
   )
-}
+})
